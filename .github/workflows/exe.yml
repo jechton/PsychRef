@@ -20,15 +20,25 @@ jobs:
           install-only: true
 
       - name: Set up Python
-        run: uv python install
+        run: uv python install 3.12
 
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: Generate spec file
+        run: pyi-makespec --name "PsychRef" "src/psychref.py"
+
+      - name: Modify spec file
+        run: |
+          $content = Get-Content -Path PsychRef.spec
+          $content = $content -replace "datas=\[\]", "datas=[('src/*.py', '.')]"
+          $content = $content -replace "hiddenimports=\[\]", "hiddenimports=['gui', 'utils', 'constants', 'customtkinter']"
+          $content | Set-Content -Path PsychRef.spec
+
       - name: Build windows .exe
         run: |
           .venv\Scripts\Activate.ps1
-          pyinstaller --noconfirm --onedir --windowed --clean --name "PsychRef" "src/psychref.py"
+          pyinstaller --clean --debug PsychRef.spec
 
       - name: Zip PsychRef directory
         run: Compress-Archive -Path dist\PsychRef -DestinationPath PsychRef.zip
