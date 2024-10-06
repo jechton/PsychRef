@@ -28,7 +28,7 @@ jobs:
       - name: Build windows .exe
         run: |
           .venv\Scripts\Activate.ps1
-          pyinstaller --clean --debug PsychRef.spec
+          pyinstaller --clean PsychRef.spec
 
       - name: Zip PsychRef directory
         run: Compress-Archive -Path dist\PsychRef -DestinationPath PsychRef.zip
