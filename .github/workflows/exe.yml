@@ -25,16 +25,6 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: Generate spec file
-        run: pyi-makespec --name "PsychRef" "src/psychref.py"
-
-      - name: Modify spec file
-        run: |
-          $content = Get-Content -Path PsychRef.spec
-          $content = $content -replace "datas=\[\]", "datas=[('src/*.py', '.')]"
-          $content = $content -replace "hiddenimports=\[\]", "hiddenimports=['gui', 'utils', 'constants', 'customtkinter']"
-          $content | Set-Content -Path PsychRef.spec
-
       - name: Build windows .exe
         run: |
           .venv\Scripts\Activate.ps1
