@@ -14,10 +14,10 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
 
-      # - name: Install UPX
-      #   uses: crazy-max/ghaction-upx@v3
-      #   with:
-      #     install-only: true
+      - name: Install UPX
+        uses: crazy-max/ghaction-upx@v3
+        with:
+          install-only: true
 
       - name: Set up Python
         run: uv python install
@@ -28,12 +28,15 @@ jobs:
       - name: Build windows .exe
         run: |
           .venv\Scripts\Activate.ps1
-          pyinstaller --noconfirm --onefile --windowed --clean --name "PsychRef" "src/psychref.py"
+          pyinstaller --noconfirm --onedir --windowed --clean --name "PsychRef" "src/psychref.py"
+
+      - name: Zip PsychRef directory
+        run: Compress-Archive -Path dist\PsychRef -DestinationPath PsychRef.zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: psychref.exe
-          path: dist/psychref.exe
+          name: PsychRef.zip
+          path: PsychRef.zip
           if-no-files-found: error
   publish:
     needs: [build]
@@ -44,12 +47,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: psychref.exe
+          name: PsychRef.zip
           path: ./
       - name: Generate release timestamp
         id: timestamp
         run: echo "timestamp=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
       - uses: softprops/action-gh-release@v2
         with:
-          files: "./psychref.exe"
+          files: "./PsychRef.zip"
           tag_name: "v${{ steps.timestamp.outputs.timestamp }}"
