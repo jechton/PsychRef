@@ -6,7 +6,7 @@ a = Analysis(
     ["src/psychref.py"],
     pathex=[],
     binaries=[],
-    datas=[("src", "src")],
+    datas=[("sys", "sys")],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
