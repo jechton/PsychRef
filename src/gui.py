@@ -107,9 +107,18 @@ class App(customtkinter.CTk):
         processing_thread.start()
 
     def _process_data(self):
-        from psychref import process_data  # Import here to avoid circular imports
+        from psychref import (  # Import here to avoid circular imports
+            check_logo_file,
+            process_data,
+        )
 
-        process_data(self.dem_sheet, self.ref_sheet, self.app_sheet)
+        try:
+            check_logo_file()  # Check for logo file before processing
+            process_data(self.dem_sheet, self.ref_sheet, self.app_sheet)
+        except FileNotFoundError as e:
+            logging.error(str(e))
+            # Show an error message box
+            customtkinter.messagebox.showerror("Error", str(e))
 
     def check_process_button_state(self):
         if (

@@ -16,6 +16,7 @@ from utils import (
 
 global_gui_mode = False
 PROCESSED_CLIENTS_FILE = "SentClientList.txt"
+LOGO_FILE = "Logo.jpg"
 
 
 def read_cache():
@@ -28,6 +29,13 @@ def read_cache():
 def write_cache(processed_clients):
     with open(PROCESSED_CLIENTS_FILE, "w") as f:
         f.write(" ".join(str(client_id) for client_id in processed_clients))
+
+
+def check_logo_file():
+    if not os.path.exists(LOGO_FILE):
+        error_message = f"Logo file '{LOGO_FILE}' not found. Please ensure the logo file is in the correct location."
+        logging.error(error_message)
+        raise FileNotFoundError(error_message)
 
 
 def get_clients(dem_sheet, ref_sheet, app_sheet, code):
@@ -158,6 +166,13 @@ def create_referral_pdfs(clients):
 
 def process_data(dem_sheet, ref_sheet, app_sheet):
     logging.info("Starting data processing")
+
+    try:
+        check_logo_file()
+    except FileNotFoundError as e:
+        logging.error(str(e))
+        return  # Exit the function if logo is not found
+
     os.makedirs("PDFs/", exist_ok=True)
     if dem_sheet is not None and ref_sheet is not None and app_sheet is not None:
         processed_clients = read_cache()
